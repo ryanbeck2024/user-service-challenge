@@ -1,8 +1,8 @@
 {
-  "name": "@monorepo-template/functions",
+  "name": "@user-service-challenge/functions",
   "version": "0.0.0",
   "dependencies": {
-    "@monorepo-template/core": "*",
+    "@user-service-challenge/core": "*",
     "sst": "*"
   },
   "devDependencies": {

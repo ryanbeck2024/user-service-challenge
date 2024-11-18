@@ -3,7 +3,7 @@
 export default $config({
   app(input) {
     return {
-      name: "monorepo-template",
+      name: "user-service-challenge",
       removal: input?.stage === "production" ? "retain" : "remove",
       home: "aws",
     };
@@ -13,7 +13,7 @@ export default $config({
     const api = await import("./infra/api");
 
     return {
-      api: api.myApi.url,
+      api: api.userApi.url,
     };
   },
 });

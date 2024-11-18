@@ -1,5 +1,5 @@
 {
-  "name": "@monorepo-template/core",
+  "name": "@user-service-challenge/core",
   "version": "0.0.0",
   "scripts": {
     "test": "sst shell vitest"
@@ -11,9 +11,15 @@
     ]
   },
   "dependencies": {
-    "sst": "*"
+    "@aws-sdk/client-dynamodb": "^3.693.0",
+    "@aws-sdk/lib-dynamodb": "^3.693.0",
+    "reflect-metadata": "^0.2.2",
+    "sst": "*",
+    "tsyringe": "^4.8.0"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "aws-sdk-client-mock": "^4.1.0",
     "vitest": "^2.0.3"
   }
 }
