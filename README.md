@@ -1,75 +1,80 @@
-# Monorepo Template
+# User Service Challenge
 
-A template to create a monorepo SST ❍ Ion project.
+AWS Serverless Stack project implementing a simple User service API backed by DynamoDB
 
-## Get started
+## Info
 
-1. Use this template to [create your own repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+This project is based on the [sst monorepo template](https://github.com/sst/monorepo-template).
 
-2. Clone the new repo.
+The service has been implemented with function handlers in `packages/functions` and service/repository layers in `packages/core` wired with the TSyringe DI framework.
 
-   ```bash
-   git clone MY_APP
-   cd MY_APP
-   ```
+## Deploy
 
-3. Rename the files in the project to the name of your app. 
+1. Prerequisites: Node 20 and configured AWS access
 
-   ```bash
-   npx replace-in-file '/monorepo-template/g' MY_APP **/*.* --verbose
-   ```
-
-4. Deploy!
+2. Deploy!
 
    ```bash
    npm install
    npx sst deploy
    ```
 
-6. Optionally, enable [_git push to deploy_](https://ion.sst.dev/docs/console/#autodeploy).
+You can use sst live mode with `npx sst dev` instead.
+
+## Test
+
+From the packages/core directory, run `npm test`
 
 ## Usage
 
-This template uses [npm Workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces). It has 3 packages to start with and you can add more it.
+1. Deploy and note the base path for API gateway endpoints in the output, e.g.
 
-1. `core/`
+```
+https://{some-id}.execute-api.us-east-1.amazonaws.com
+```
 
-   This is for any shared code. It's defined as modules. For example, there's the `Example` module.
+2. Create a user. Note that `userId` is expected to be provided by the client in this implementation, not auto-assigned by the service.
 
-   ```ts
-   export module Example {
-     export function hello() {
-       return "Hello, world!";
-     }
-   }
-   ```
+```
+POST https://{some-id}.execute-api.us-east-1.amazonaws.com/users
+Content-Type: application/json
+{
+   "userId": "string",
+   "name": "string",
+   "dob": "string",
+   "emails": ["string"]
+}
+```
 
-   That you can use across other packages using.
+3. Read the user
 
-   ```ts
-   import { Example } from "@aws-monorepo/core/example";
+```
+GET https://{some-id}.execute-api.us-east-1.amazonaws.com/users/{userId}
+```
 
-   Example.hello();
-   ```
+4. Update the user
 
-2. `functions/`
+```
+PUT https://{some-id}.execute-api.us-east-1.amazonaws.com/users/{userId}
+Content-Type: application/json
+{
+   "userId": "string",
+   "name": "string",
+   "dob": "string",
+   "emails": ["try-adding-more"]
+}
+```
 
-   This is for your Lambda functions and it uses the `core` package as a local dependency.
+5. Delete the user
 
-3. `scripts/`
+```
+DELETE https://{some-id}.execute-api.us-east-1.amazonaws.com/users/{userId}
+```
 
-    This is for any scripts that you can run on your SST app using the `sst shell` CLI and [`tsx`](https://www.npmjs.com/package/tsx). For example, you can run the example script using:
+## Future Considerations
 
-   ```bash
-   npm run shell src/example.ts
-   ```
-
-### Infrastructure
-
-The `infra/` directory allows you to logically split the infrastructure of your app into separate files. This can be helpful as your app grows.
-
-In the template, we have an `api.ts`, and `storage.ts`. These export the created resources. And are imported in the `sst.config.ts`.
-
----
-
-Join the SST community over on [Discord](https://discord.gg/sst) and follow us on [Twitter](https://twitter.com/SST_dev).
+- Validation of user info, e.g. any string is allowed for a user email. A real system may also want to implement confirmation emails.
+- User table is very simple (partitioned on userId only). Depending on expected future requirements, having a sort key and possibly GSIs may be desired (e.g. unique emails per person, or this service managing other user data).
+- Middleware for api layer to better handle lambda request/response/error patterns.
+- Better understanding of the DI framework (or whether to use one at all).
+- Fix issues with testing, e.g. had some trouble getting the jest matchers to work with the aws-sdk-client-mock lib.
